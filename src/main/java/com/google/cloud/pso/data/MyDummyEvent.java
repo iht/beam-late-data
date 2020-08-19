@@ -19,11 +19,15 @@ package com.google.cloud.pso.data;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.TimeZone;
 import lombok.Data;
 import org.apache.beam.sdk.coders.AvroCoder;
 import org.apache.beam.sdk.coders.DefaultCoder;
+import org.apache.beam.sdk.values.KV;
+import org.apache.beam.sdk.values.TimestampedValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,44 +40,63 @@ public class MyDummyEvent implements Comparable<MyDummyEvent> {
   private static int last_msg_id = 0;
   private int msg_id;
 
+  private String key;
   private int type;
   private long eventTimestamp;
-  private int sessionID;
-  private int firewallSerial;
   private boolean isLate;
 
-  public MyDummyEvent(
-      int type, long eventTimestamp, int sessionID, int firewallSerial, boolean isLate) {
+  public MyDummyEvent(String key, int type, long eventTimestamp, boolean isLate) {
+    this.key = key;
     this.type = type;
     this.eventTimestamp = eventTimestamp;
-    this.sessionID = sessionID;
-    this.firewallSerial = firewallSerial;
     this.isLate = isLate;
 
     last_msg_id++;
     this.msg_id = last_msg_id;
   }
 
-  public static MyDummyEvent createRandomEvent(
-      int sessionID, int firewallSerial, Long timestamp, boolean isLate) {
+  public static MyDummyEvent createRandomEvent(String key, Long timestamp, boolean isLate) {
     Random r = new Random();
     int type = r.ints(0, 10).findFirst().getAsInt();
 
-    return new MyDummyEvent(type, timestamp, sessionID, firewallSerial, isLate);
+    return new MyDummyEvent(key, type, timestamp, isLate);
+  }
+
+  /**
+   * Generate a list of messages
+   *
+   * @param N Number of messages to generate
+   * @param msgKey The key for the messages to be generated
+   * @param isLate Whether we should tag or not these messages as late. This tag is only used for
+   *     reporting.
+   * @param testEpoch The oldest possible timestamp for the values.
+   * @return A list of timestampted values, starting from the testEpoch
+   */
+  public static List<TimestampedValue<KV<String, MyDummyEvent>>> generateData(
+      int N, String msgKey, boolean isLate, org.joda.time.Instant testEpoch) {
+    Random r = new Random();
+    List<TimestampedValue<KV<String, MyDummyEvent>>> events = new ArrayList<>();
+
+    for (int k = 0; k < N; k++) {
+      // Generate events shifted ~1 sec from each other
+      Long shift = r.longs(100, 2999).findFirst().getAsLong();
+      Long ts = testEpoch.plus(shift).plus(1000 * (k + 1)).getMillis();
+
+      MyDummyEvent event = MyDummyEvent.createRandomEvent(msgKey, ts, isLate);
+
+      KV<String, MyDummyEvent> val = KV.of(event.getKey(), event);
+      TimestampedValue<KV<String, MyDummyEvent>> tsval =
+          TimestampedValue.of(val, new org.joda.time.Instant(ts));
+
+      events.add(tsval);
+    }
+
+    return events;
   }
 
   public LocalDateTime getDateTime() {
     return LocalDateTime.ofInstant(
         Instant.ofEpochSecond(this.eventTimestamp), TimeZone.getDefault().toZoneId());
-  }
-
-  /**
-   * Get the key for this event, in CSV format.
-   *
-   * @return String with a CSV-friendly representation of the key for the event.
-   */
-  public String getKey() {
-    return String.format("%d,%d", sessionID, firewallSerial);
   }
 
   /** This must be overridden to be able to sort collections of `MyDummyEvent` */
