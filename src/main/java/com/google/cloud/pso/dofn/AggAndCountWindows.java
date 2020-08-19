@@ -34,7 +34,8 @@ import org.apache.beam.sdk.values.KV;
  *
  * <p>It is used during the unit tests, to evaluate the impact of different windowing strategies.
  */
-public class AggAndCountWindows extends DoFn<KV<String, Iterable<MyDummyEvent>>, PaneGroupMetadata> {
+public class AggAndCountWindows
+    extends DoFn<KV<String, Iterable<MyDummyEvent>>, PaneGroupMetadata> {
 
   public static int NUM_TRIGGERS = 0;
   // public static Set<String> SEEN_WINDOWS_IN_TRIGGER = new HashSet<>();
@@ -71,21 +72,19 @@ public class AggAndCountWindows extends DoFn<KV<String, Iterable<MyDummyEvent>>,
     Collections.sort(timestamps);
 
     Long lastTsLong = timestamps.get(size - 1);
-    Instant lastTs = Instant.ofEpochMilli(lastTsLong);
 
     PaneGroupMetadata paneGroupMetadata =
-        PaneGroupMetadata.builder()
-            .numberOfTriggers(NUM_TRIGGERS)
-            .key(kv.getKey())
-            .windowBoundaries(w.toString())
-            .isFirstPane(c.pane().isFirst())
-            .isLastPane(c.pane().isLast())
-            .timing(c.pane().getTiming().toString())
-            .lastTimestamp(lastTs)
-            .numEventsBeforeWindow(NUM_PROCESSED_EVENTS_BEFORE_WINDOW)
-            .numEventsAfterWindow(NUM_PROCESSED_EVENTS_AFTER_WINDOW)
-            .groupSize(size)
-            .build();
+        new PaneGroupMetadata(
+            NUM_TRIGGERS,
+            kv.getKey(),
+            w.toString(),
+            c.pane().isFirst(),
+            c.pane().isLast(),
+            c.pane().getTiming().toString(),
+            lastTsLong,
+            NUM_PROCESSED_EVENTS_BEFORE_WINDOW,
+            NUM_PROCESSED_EVENTS_AFTER_WINDOW,
+            size);
 
     c.output(paneGroupMetadata);
   }

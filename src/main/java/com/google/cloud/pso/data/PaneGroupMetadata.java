@@ -18,8 +18,8 @@
 package com.google.cloud.pso.data;
 
 import java.time.Instant;
-import lombok.Builder;
-import lombok.NonNull;
+import java.time.LocalDateTime;
+import java.util.TimeZone;
 import org.apache.beam.sdk.coders.AvroCoder;
 import org.apache.beam.sdk.coders.DefaultCoder;
 
@@ -31,29 +31,53 @@ import org.apache.beam.sdk.coders.DefaultCoder;
  * be examined easily in the output.
  */
 @DefaultCoder(AvroCoder.class)
-@Builder
 public class PaneGroupMetadata {
 
-  @NonNull
   private int
       numberOfTriggers; // Number of triggers up to this point (to order the rows in the output)
 
-  @NonNull private String key; // Key of this group
-  @NonNull private String windowBoundaries; // Window boundaries (timestamps) as a string
-  @NonNull private Boolean isFirstPane; // Is this the first pane/trigger of this window?
-  @NonNull private Boolean isLastPane; // Is it the last one?
-  @NonNull private String timing; // EARLY, ON_TIME or LATE
-  @NonNull private Instant lastTimestamp; // Last timestamp seen in this pane
-  @NonNull private int numEventsBeforeWindow; // Num. of events seen before applying the window
+  private String key; // Key of this group
+  private String windowBoundaries; // Window boundaries (timestamps) as a string
+  private Boolean isFirstPane; // Is this the first pane/trigger of this window?
+  private Boolean isLastPane; // Is it the last one?
+  private String timing; // EARLY, ON_TIME or LATE
+  private long lastTimestamp; // Last timestamp seen in this pane
+  private int numEventsBeforeWindow; // Num. of events seen before applying the window
 
-  @NonNull
   private int
       numEventsAfterWindow; // Num. of events seen after the window (same if no dropped data)
 
-  @NonNull private int groupSize;   // Number of elements in this group
+  private int groupSize; // Number of elements in this group
+
+  // This constructor is necessary to run tests with JUnit
+  public PaneGroupMetadata() {}
+
+  public PaneGroupMetadata(
+      int numberOfTriggers,
+      String key,
+      String windowBoundaries,
+      Boolean isFirstPane,
+      Boolean isLastPane,
+      String timing,
+      long lastTimestamp,
+      int numEventsBeforeWindow,
+      int numEventsAfterWindow,
+      int groupSize) {
+    this.numberOfTriggers = numberOfTriggers;
+    this.key = key;
+    this.windowBoundaries = windowBoundaries;
+    this.isFirstPane = isFirstPane;
+    this.isLastPane = isLastPane;
+    this.timing = timing;
+    this.lastTimestamp = lastTimestamp;
+    this.numEventsBeforeWindow = numEventsBeforeWindow;
+    this.numEventsAfterWindow = numEventsAfterWindow;
+    this.groupSize = groupSize;
+  }
 
   public String toCSVLine() {
-    String line = String.format(
+    String line =
+        String.format(
             "%d,%s,%s,%b,%b,%s,%s,%d,%d,%d",
             numberOfTriggers,
             key,
@@ -61,11 +85,16 @@ public class PaneGroupMetadata {
             isFirstPane,
             isLastPane,
             isLastPane,
-            lastTimestamp.toString(),
+            lastTimestamp,
             numEventsBeforeWindow,
             numEventsAfterWindow,
             groupSize);
 
     return line;
+  }
+
+  public LocalDateTime getDateTime() {
+    return LocalDateTime.ofInstant(
+        Instant.ofEpochSecond(this.lastTimestamp), TimeZone.getDefault().toZoneId());
   }
 }

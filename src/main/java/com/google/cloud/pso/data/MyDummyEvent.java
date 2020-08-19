@@ -45,6 +45,8 @@ public class MyDummyEvent implements Comparable<MyDummyEvent> {
   private long eventTimestamp;
   private boolean isLate;
 
+  public MyDummyEvent() {}
+
   public MyDummyEvent(String key, int type, long eventTimestamp, boolean isLate) {
     this.key = key;
     this.type = type;

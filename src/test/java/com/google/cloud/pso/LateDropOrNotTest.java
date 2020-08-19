@@ -17,13 +17,18 @@
 
 package com.google.cloud.pso;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+
 import com.google.cloud.pso.data.MyDummyEvent;
 import com.google.cloud.pso.data.PaneGroupMetadata;
 import com.google.cloud.pso.dofn.AggAndCountWindows;
 import com.google.cloud.pso.windows.SampleSessionWindow;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.apache.beam.sdk.coders.AvroCoder;
 import org.apache.beam.sdk.coders.KvCoder;
 import org.apache.beam.sdk.testing.TestPipeline;
@@ -161,5 +166,24 @@ public class LateDropOrNotTest {
     // triggers
     PCollection<PaneGroupMetadata> summed =
         grouped.apply("Sum groups", ParDo.of(new AggAndCountWindows()));
+
+    pipeline.run();
+
+    /** Test assertions */
+    List<TimestampedValue<KV<String, MyDummyEvent>>> allEvents = new ArrayList<>();
+    allEvents.addAll(onTimeEvents);
+    allEvents.addAll(lateEvents);
+
+    // Make sure all messages are processed before windowing
+    assertEquals(
+        "All messages are processed before windowing",
+        N_ONTIME + N_LATE,
+        AggAndCountWindows.NUM_PROCESSED_EVENTS_BEFORE_WINDOW);
+
+    // Make sure all messages are counted after windowing (no late messages are dropped)
+    assertEquals(
+        "No late messages are dropped after windowing",
+        AggAndCountWindows.NUM_PROCESSED_EVENTS_BEFORE_WINDOW,
+        AggAndCountWindows.NUM_PROCESSED_EVENTS_AFTER_WINDOW);
   }
 }
