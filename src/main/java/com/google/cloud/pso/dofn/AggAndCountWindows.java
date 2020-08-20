@@ -23,7 +23,9 @@ import com.google.common.collect.Iterables;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.apache.beam.sdk.transforms.DoFn;
 import org.apache.beam.sdk.transforms.windowing.BoundedWindow;
 import org.apache.beam.sdk.values.KV;
@@ -38,10 +40,10 @@ public class AggAndCountWindows
     extends DoFn<KV<String, Iterable<MyDummyEvent>>, PaneGroupMetadata> {
 
   public static int NUM_TRIGGERS = 0;
-  // public static Set<String> SEEN_WINDOWS_IN_TRIGGER = new HashSet<>();
+  public static Set<String> SEEN_WINDOWS_IN_TRIGGER = new HashSet<>();
   // public static Set<MyDummyEvent> SEEN_EVENTS_AFTER_WINDOW = new HashSet<>();
   public static int NUM_PROCESSED_EVENTS_BEFORE_WINDOW = 0;
-  public static int NUM_PROCESSED_EVENTS_AFTER_WINDOW = 0;
+  //public static int NUM_PROCESSED_EVENTS_AFTER_WINDOW = 0;
 
   @ProcessElement
   public void processElement(ProcessContext c, BoundedWindow w) {
@@ -66,8 +68,10 @@ public class AggAndCountWindows
     List<Long> timestamps = new ArrayList<>();
     for (MyDummyEvent event : vals) {
       timestamps.add(event.getEventTimestamp());
-      NUM_PROCESSED_EVENTS_AFTER_WINDOW++;
+      // This must be a set because the same event will be visited once per trigger
+      SEEN_WINDOWS_IN_TRIGGER.add(event.toString());
     }
+
     // Order by timestamp
     Collections.sort(timestamps);
 
@@ -83,7 +87,7 @@ public class AggAndCountWindows
             c.pane().getTiming().toString(),
             lastTsLong,
             NUM_PROCESSED_EVENTS_BEFORE_WINDOW,
-            NUM_PROCESSED_EVENTS_AFTER_WINDOW,
+            SEEN_WINDOWS_IN_TRIGGER.size(),
             size);
 
     c.output(paneGroupMetadata);
