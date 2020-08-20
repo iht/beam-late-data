@@ -47,15 +47,6 @@ public class AggAndCountWindows
 
   @ProcessElement
   public void processElement(ProcessContext c, BoundedWindow w) {
-
-    //    if (NUM_TRIGGERS == 0) {
-    //      // Write header
-    //      String header =
-    //
-    // "triggers,sid,fwid,window,is_first,is_last,timing,newest_event_time,num_msgs,partial_sum";
-    //      c.output(header);
-    //    }
-
     // The input is the list of dummy events, grouped together by key, after applying the window
     KV<String, Iterable<MyDummyEvent>> kv = c.element();
     // This DoFn is applied after a GroupByKey and a Window, so this will run once per trigger
@@ -75,17 +66,13 @@ public class AggAndCountWindows
     // Order by timestamp
     Collections.sort(timestamps);
 
-    Long lastTsLong = timestamps.get(size - 1);
-
     PaneGroupMetadata paneGroupMetadata =
         new PaneGroupMetadata(
             NUM_TRIGGERS,
-            kv.getKey(),
             w.toString(),
             c.pane().isFirst(),
             c.pane().isLast(),
             c.pane().getTiming().toString(),
-            lastTsLong,
             NUM_PROCESSED_EVENTS_BEFORE_WINDOW,
             SEEN_WINDOWS_IN_TRIGGER.size(),
             size);

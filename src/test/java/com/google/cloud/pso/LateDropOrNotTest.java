@@ -18,7 +18,6 @@
 package com.google.cloud.pso;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 
 import com.google.cloud.pso.data.MyDummyEvent;
 import com.google.cloud.pso.data.PaneGroupMetadata;
@@ -26,16 +25,20 @@ import com.google.cloud.pso.dofn.AggAndCountWindows;
 import com.google.cloud.pso.windows.SampleSessionWindow;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import org.apache.beam.sdk.coders.AvroCoder;
 import org.apache.beam.sdk.coders.KvCoder;
+import org.apache.beam.sdk.io.TextIO;
 import org.apache.beam.sdk.testing.TestPipeline;
 import org.apache.beam.sdk.testing.TestStream;
 import org.apache.beam.sdk.transforms.GroupByKey;
 import org.apache.beam.sdk.transforms.MapElements;
 import org.apache.beam.sdk.transforms.ParDo;
+import org.apache.beam.sdk.transforms.windowing.AfterPane;
+import org.apache.beam.sdk.transforms.windowing.AfterProcessingTime;
+import org.apache.beam.sdk.transforms.windowing.FixedWindows;
+import org.apache.beam.sdk.transforms.windowing.Repeatedly;
+import org.apache.beam.sdk.transforms.windowing.Window;
 import org.apache.beam.sdk.values.KV;
 import org.apache.beam.sdk.values.PCollection;
 import org.apache.beam.sdk.values.TimestampedValue;
@@ -166,6 +169,25 @@ public class LateDropOrNotTest {
     // triggers
     PCollection<PaneGroupMetadata> summed =
         grouped.apply("Sum groups", ParDo.of(new AggAndCountWindows()));
+
+    PCollection<String> csvLines =
+        summed.apply(
+            "To CSV",
+            MapElements.into(TypeDescriptors.strings()).via(PaneGroupMetadata::toCSVLine));
+
+    // Rewindow for writing. Allow for enough lateness, not to drop any CSV line
+    PCollection<String> rewindowed =
+        csvLines.apply(
+            "Rewindow before writing",
+            Window.<String>into(FixedWindows.of(Duration.standardDays(1)))
+                .triggering(Repeatedly.forever(AfterPane.elementCountAtLeast(N_ONTIME + N_LATE))));
+
+    rewindowed.apply(
+        "Write CSV",
+        TextIO.write()
+            .withNumShards(1)
+            .to(String.format("target/output/%s/data_", Instant.now().toString()))
+            .withWindowedWrites());
 
     pipeline.run();
 
