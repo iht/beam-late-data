@@ -62,13 +62,14 @@ public class SomeSampleWindow
 
   /** A fixed window with no dropped late data */
   public Window<KV<String, MyDummyEvent>> fixedWindow() {
-    Window<KV<String, MyDummyEvent>> window = Window.<KV<String, MyDummyEvent>>into(FixedWindows.of(Duration.standardSeconds(10)))
+    Window<KV<String, MyDummyEvent>> window =
+        Window.<KV<String, MyDummyEvent>>into(FixedWindows.of(Duration.standardSeconds(100)))
             .triggering(
-                    AfterWatermark.pastEndOfWindow()
-                            .withEarlyFirings(
-                                    AfterProcessingTime.pastFirstElementInPane()
-                                            .plusDelayOf(Duration.standardSeconds(5)))
-                            .withLateFirings(AfterProcessingTime.pastFirstElementInPane()))
+                AfterWatermark.pastEndOfWindow()
+                    .withEarlyFirings(
+                        AfterProcessingTime.pastFirstElementInPane()
+                            .plusDelayOf(Duration.standardSeconds(5)))
+                    .withLateFirings(AfterProcessingTime.pastFirstElementInPane()))
             .withAllowedLateness(Duration.standardDays(10))
             .accumulatingFiredPanes();
 
@@ -77,13 +78,14 @@ public class SomeSampleWindow
 
   /** A fixed window dropping late data */
   public Window<KV<String, MyDummyEvent>> fixedWindowDropLateData() {
-    Window<KV<String, MyDummyEvent>> window = Window.<KV<String, MyDummyEvent>>into(FixedWindows.of(Duration.standardSeconds(10)))
+    Window<KV<String, MyDummyEvent>> window =
+        Window.<KV<String, MyDummyEvent>>into(FixedWindows.of(Duration.standardSeconds(10)))
             .triggering(
-                    AfterWatermark.pastEndOfWindow()
-                            .withEarlyFirings(
-                                    AfterProcessingTime.pastFirstElementInPane()
-                                            .plusDelayOf(Duration.standardSeconds(5)))
-                            .withLateFirings(AfterProcessingTime.pastFirstElementInPane()))
+                AfterWatermark.pastEndOfWindow()
+                    .withEarlyFirings(
+                        AfterProcessingTime.pastFirstElementInPane()
+                            .plusDelayOf(Duration.standardSeconds(5)))
+                    .withLateFirings(AfterProcessingTime.pastFirstElementInPane()))
             .withAllowedLateness(Duration.standardSeconds(0))
             .accumulatingFiredPanes();
 
@@ -93,7 +95,7 @@ public class SomeSampleWindow
   /** A session window with firing based on AfterEach.inOrder */
   public Window<KV<String, MyDummyEvent>> sessionWindowAfterEach() {
     Window<KV<String, MyDummyEvent>> window =
-        Window.<KV<String, MyDummyEvent>>into(Sessions.withGapDuration(Duration.standardSeconds(3)))
+        Window.<KV<String, MyDummyEvent>>into(Sessions.withGapDuration(Duration.standardSeconds(5)))
             .triggering(
                 AfterEach.inOrder(
                     AfterProcessingTime.pastFirstElementInPane()
@@ -108,7 +110,7 @@ public class SomeSampleWindow
   /** A session window with firing based on watermark */
   private Window<KV<String, MyDummyEvent>> sessionWindowWatermark() {
     Window<KV<String, MyDummyEvent>> window =
-        Window.<KV<String, MyDummyEvent>>into(Sessions.withGapDuration(Duration.standardSeconds(3)))
+        Window.<KV<String, MyDummyEvent>>into(Sessions.withGapDuration(Duration.standardSeconds(5)))
             .triggering(
                 AfterWatermark.pastEndOfWindow()
                     .withEarlyFirings(
