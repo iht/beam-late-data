@@ -20,7 +20,6 @@ package com.google.cloud.pso.dofn;
 import com.google.cloud.pso.data.MyDummyEvent;
 import com.google.cloud.pso.data.PaneGroupMetadata;
 import com.google.common.collect.Iterables;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -40,7 +39,7 @@ public class AggAndCountWindows
     extends DoFn<KV<String, Iterable<MyDummyEvent>>, PaneGroupMetadata> {
 
   public static int NUM_TRIGGERS = 0;
-  public static Set<String> SEEN_WINDOWS_IN_TRIGGER = new HashSet<>();
+  public static Set<String> SEEN_EVENTS_IN_TRIGGERS = new HashSet<>();
   // public static Set<MyDummyEvent> SEEN_EVENTS_AFTER_WINDOW = new HashSet<>();
   public static int NUM_PROCESSED_EVENTS_BEFORE_WINDOW = 0;
   //public static int NUM_PROCESSED_EVENTS_AFTER_WINDOW = 0;
@@ -60,7 +59,7 @@ public class AggAndCountWindows
     for (MyDummyEvent event : vals) {
       timestamps.add(event.getEventTimestamp());
       // This must be a set because the same event will be visited once per trigger
-      SEEN_WINDOWS_IN_TRIGGER.add(event.toString());
+      SEEN_EVENTS_IN_TRIGGERS.add(event.toString());
     }
 
     // Order by timestamp
@@ -74,7 +73,7 @@ public class AggAndCountWindows
             c.pane().isLast(),
             c.pane().getTiming().toString(),
             NUM_PROCESSED_EVENTS_BEFORE_WINDOW,
-            SEEN_WINDOWS_IN_TRIGGER.size(),
+            SEEN_EVENTS_IN_TRIGGERS.size(),
             size);
 
     c.output(paneGroupMetadata);

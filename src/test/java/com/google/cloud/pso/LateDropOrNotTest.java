@@ -206,6 +206,6 @@ public class LateDropOrNotTest {
     assertEquals(
         "No late messages are dropped after windowing",
         AggAndCountWindows.NUM_PROCESSED_EVENTS_BEFORE_WINDOW,
-        AggAndCountWindows.SEEN_WINDOWS_IN_TRIGGER.size());
+        AggAndCountWindows.SEEN_EVENTS_IN_TRIGGERS.size());
   }
 }
