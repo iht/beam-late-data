@@ -35,7 +35,6 @@ import org.apache.beam.sdk.transforms.GroupByKey;
 import org.apache.beam.sdk.transforms.MapElements;
 import org.apache.beam.sdk.transforms.ParDo;
 import org.apache.beam.sdk.transforms.windowing.AfterPane;
-import org.apache.beam.sdk.transforms.windowing.AfterProcessingTime;
 import org.apache.beam.sdk.transforms.windowing.FixedWindows;
 import org.apache.beam.sdk.transforms.windowing.Repeatedly;
 import org.apache.beam.sdk.transforms.windowing.Window;
@@ -147,10 +146,9 @@ public class LateDropOrNotTest {
 
     /** Streaming pipeline */
     PCollection<KV<String, MyDummyEvent>> events = pipeline.apply(st);
-    PCollection<KV<String, MyDummyEvent>> windowed = events.apply(new SampleSessionWindow());
     // Identity, just to count elements
     PCollection<KV<String, MyDummyEvent>> identity =
-        windowed.apply(
+        events.apply(
             "Identity transform (to count processed events)",
             MapElements.into(
                     TypeDescriptors.kvs(
@@ -161,9 +159,11 @@ public class LateDropOrNotTest {
                       return kv;
                     }));
 
+    PCollection<KV<String, MyDummyEvent>> windowed = identity.apply(new SampleSessionWindow());
+
     // We group, and then we will sum. We should get as many partial sums as triggers
     PCollection<KV<String, Iterable<MyDummyEvent>>> grouped =
-        identity.apply("Group", GroupByKey.create());
+        windowed.apply("Group", GroupByKey.create());
 
     // Keep track of window id for each trigger, count number of different windows and number of
     // triggers
