@@ -22,7 +22,8 @@ import static org.junit.Assert.assertEquals;
 import com.google.cloud.pso.data.MyDummyEvent;
 import com.google.cloud.pso.data.PaneGroupMetadata;
 import com.google.cloud.pso.dofn.AggAndCountWindows;
-import com.google.cloud.pso.windows.SampleSessionWindow;
+import com.google.cloud.pso.windows.SomeSampleWindow;
+import com.google.cloud.pso.windows.SomeSampleWindow.WindowType;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -159,7 +160,8 @@ public class LateDropOrNotTest {
                       return kv;
                     }));
 
-    PCollection<KV<String, MyDummyEvent>> windowed = identity.apply(new SampleSessionWindow());
+    PCollection<KV<String, MyDummyEvent>> windowed =
+        identity.apply(new SomeSampleWindow(WindowType.FIXED_WINDOW_DROP));
 
     // We group, and then we will sum. We should get as many partial sums as triggers
     PCollection<KV<String, Iterable<MyDummyEvent>>> grouped =
