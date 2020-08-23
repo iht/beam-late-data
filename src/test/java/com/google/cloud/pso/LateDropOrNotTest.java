@@ -161,7 +161,7 @@ public class LateDropOrNotTest {
                     }));
 
     PCollection<KV<String, MyDummyEvent>> windowed =
-        identity.apply(new SomeSampleWindow(WindowType.SESSION_WINDOW_WATERMARK));
+        identity.apply(new SomeSampleWindow(WindowType.SESSION_WINDOW_AFTER_EACH_IN_ORDER));
 
     // We group, and then we will sum. We should get as many partial sums as triggers
     PCollection<KV<String, Iterable<MyDummyEvent>>> grouped =

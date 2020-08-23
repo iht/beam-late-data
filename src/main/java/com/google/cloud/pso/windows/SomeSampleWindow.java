@@ -20,6 +20,7 @@ package com.google.cloud.pso.windows;
 import com.google.cloud.pso.data.MyDummyEvent;
 import org.apache.beam.sdk.transforms.PTransform;
 import org.apache.beam.sdk.transforms.windowing.AfterEach;
+import org.apache.beam.sdk.transforms.windowing.AfterPane;
 import org.apache.beam.sdk.transforms.windowing.AfterProcessingTime;
 import org.apache.beam.sdk.transforms.windowing.AfterWatermark;
 import org.apache.beam.sdk.transforms.windowing.FixedWindows;
@@ -98,9 +99,10 @@ public class SomeSampleWindow
         Window.<KV<String, MyDummyEvent>>into(Sessions.withGapDuration(Duration.standardSeconds(5)))
             .triggering(
                 AfterEach.inOrder(
-                    AfterProcessingTime.pastFirstElementInPane()
-                        .plusDelayOf(Duration.standardSeconds(8)),
-                    Repeatedly.forever(AfterProcessingTime.pastFirstElementInPane())))
+                        AfterPane.elementCountAtLeast(3),
+                        AfterPane.elementCountAtLeast(10),
+                        Repeatedly.forever(AfterPane.elementCountAtLeast(15))
+                ))
             .withAllowedLateness(Duration.standardDays(10))
             .accumulatingFiredPanes();
 
