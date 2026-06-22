@@ -27,7 +27,7 @@
   <packaging>jar</packaging>
 
   <properties>
-    <beam.version>2.59.0</beam.version>
+    <beam.version>2.74.0</beam.version>
     <hamcrest.version>3.0</hamcrest.version>
     <joda.version>2.14.2</joda.version>
     <junit.version>4.13.2</junit.version>
@@ -35,12 +35,11 @@
     <maven-exec-plugin.version>3.6.3</maven-exec-plugin.version>
     <maven-jar-plugin.version>3.5.0</maven-jar-plugin.version>
     <maven-shade-plugin.version>3.6.2</maven-shade-plugin.version>
-    <mockito.version>3.12.4</mockito.version>
+    <mockito.version>5.23.0</mockito.version>
     <slf4j.version>2.0.18</slf4j.version>
     <maven-surefire-plugin.version>3.5.6</maven-surefire-plugin.version>
     <lombok.version>1.18.46</lombok.version>
-    <maven.compiler.source>17</maven.compiler.source>
-    <maven.compiler.target>17</maven.compiler.target>
+    <maven.compiler.release>25</maven.compiler.release>
   </properties>
 
   <repositories>
@@ -64,8 +63,7 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>${maven-compiler-plugin.version}</version>
         <configuration>
-          <source>${maven.compiler.source}</source>
-          <target>${maven.compiler.target}</target>
+          <release>${maven.compiler.release}</release>
           <annotationProcessorPaths>
             <path>
               <groupId>org.projectlombok</groupId>
@@ -84,6 +82,9 @@
           <parallel>all</parallel>
           <threadCount>4</threadCount>
           <redirectTestOutputToFile>true</redirectTestOutputToFile>
+          <argLine>
+            -javaagent:${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar
+          </argLine>
         </configuration>
         <dependencies>
           <dependency>
