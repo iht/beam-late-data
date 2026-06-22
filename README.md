@@ -17,7 +17,7 @@ This repo contains a sample pipeline that uses unit testing to check if your win
 ## Watch the Talk
 
 - Watch the video at the [Beam Summit website](https://2020.beamsummit.org/sessions/understanding-exactly-once-processing/).
-- [Check also the slides and the notes of each slide on Google Drive](https://drive.google.com/file/d/1XOZ5EMSjVv1WwJe_X7kqhqSVm502pzfs/view?usp=sharing) (or use the local [Slides PDF](docs/slides.pdf)).
+- [Check the local Slides PDF](docs/slides.pdf).
 
 ---
 
