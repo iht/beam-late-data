@@ -45,7 +45,7 @@
     <spark.version>2.4.8</spark.version>
     <hadoop.version>2.10.2</hadoop.version>
     <maven-surefire-plugin.version>3.5.6</maven-surefire-plugin.version>
-    <nemo.version>0.1</nemo.version>
+    <nemo.version>0.4</nemo.version>
     <flink.artifact.name>beam-runners-flink-1.10</flink.artifact.name>
     <lombok.version>1.18.46</lombok.version>
   </properties>
