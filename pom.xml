@@ -38,7 +38,7 @@
     <maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
     <maven-exec-plugin.version>1.6.0</maven-exec-plugin.version>
     <maven-jar-plugin.version>3.0.2</maven-jar-plugin.version>
-    <maven-shade-plugin.version>3.1.0</maven-shade-plugin.version>
+    <maven-shade-plugin.version>3.6.2</maven-shade-plugin.version>
     <mockito.version>3.0.0</mockito.version>
     <pubsub.version>v1-rev20200713-1.30.10</pubsub.version>
     <slf4j.version>1.7.30</slf4j.version>
