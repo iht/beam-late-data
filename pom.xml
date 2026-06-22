@@ -42,7 +42,7 @@
     <mockito.version>3.12.4</mockito.version>
     <pubsub.version>v1-rev20200713-1.30.10</pubsub.version>
     <slf4j.version>1.7.30</slf4j.version>
-    <spark.version>2.4.6</spark.version>
+    <spark.version>2.4.8</spark.version>
     <hadoop.version>2.10.2</hadoop.version>
     <maven-surefire-plugin.version>3.5.6</maven-surefire-plugin.version>
     <nemo.version>0.1</nemo.version>
