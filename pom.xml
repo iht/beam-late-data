@@ -30,7 +30,7 @@
     <beam.version>2.25.0</beam.version>
 
     <google-api-client.version>1.35.2</google-api-client.version>
-    <google-http-client.version>1.47.1</google-http-client.version>
+    <google-http-client.version>2.1.0</google-http-client.version>
     <hamcrest.version>3.0</hamcrest.version>
     <jackson.version>2.10.2</jackson.version>
     <joda.version>2.14.2</joda.version>
