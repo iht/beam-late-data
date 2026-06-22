@@ -32,7 +32,7 @@
     <google-api-client.version>1.30.10</google-api-client.version>
     <google-http-client.version>1.47.1</google-http-client.version>
     <hamcrest.version>3.0</hamcrest.version>
-    <jackson.version>2.10.2</jackson.version>
+    <jackson.version>2.22.0</jackson.version>
     <joda.version>2.14.2</joda.version>
     <junit.version>4.13.2</junit.version>
     <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
