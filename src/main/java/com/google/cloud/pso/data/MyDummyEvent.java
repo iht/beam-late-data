@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.TimeZone;
 import lombok.Data;
-import org.apache.beam.sdk.coders.AvroCoder;
+import org.apache.beam.sdk.extensions.avro.coders.AvroCoder;
 import org.apache.beam.sdk.coders.DefaultCoder;
 import org.apache.beam.sdk.values.KV;
 import org.apache.beam.sdk.values.TimestampedValue;

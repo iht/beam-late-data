@@ -27,7 +27,7 @@ import com.google.cloud.pso.windows.SomeSampleWindow.WindowType;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.apache.beam.sdk.coders.AvroCoder;
+import org.apache.beam.sdk.extensions.avro.coders.AvroCoder;
 import org.apache.beam.sdk.coders.KvCoder;
 import org.apache.beam.sdk.io.TextIO;
 import org.apache.beam.sdk.testing.TestPipeline;

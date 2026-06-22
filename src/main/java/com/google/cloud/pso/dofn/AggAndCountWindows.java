@@ -19,7 +19,7 @@ package com.google.cloud.pso.dofn;
 
 import com.google.cloud.pso.data.MyDummyEvent;
 import com.google.cloud.pso.data.PaneGroupMetadata;
-import com.google.common.collect.Iterables;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -53,14 +53,14 @@ public class AggAndCountWindows
 
     // Events grouped after GroupByKey
     Iterable<MyDummyEvent> vals = kv.getValue();
-    // Number of events in group
-    int size = Iterables.size(vals);
     List<Long> timestamps = new ArrayList<>();
     for (MyDummyEvent event : vals) {
       timestamps.add(event.getEventTimestamp());
       // This must be a set because the same event will be visited once per trigger
       SEEN_EVENTS_IN_TRIGGERS.add(event.toString());
     }
+    // Number of events in group
+    int size = timestamps.size();
 
     // Order by timestamp
     Collections.sort(timestamps);
