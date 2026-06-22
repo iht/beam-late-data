@@ -33,7 +33,7 @@
     <google-http-client.version>1.47.1</google-http-client.version>
     <hamcrest.version>2.2</hamcrest.version>
     <jackson.version>2.10.2</jackson.version>
-    <joda.version>2.10.5</joda.version>
+    <joda.version>2.14.2</joda.version>
     <junit.version>4.13.2</junit.version>
     <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
     <maven-exec-plugin.version>3.6.3</maven-exec-plugin.version>
