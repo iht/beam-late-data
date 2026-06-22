@@ -6,33 +6,33 @@ This repository contains the code showcased in the Beam Summit 2020 talk:
 [![Slides](https://img.shields.io/badge/Slides-PDF-red)](docs/slides.pdf)
 [![Talk](https://img.shields.io/badge/Talk-Beam%20Summit-blue)](https://2020.beamsummit.org/sessions/understanding-exactly-once-processing/)
 
-In this talk, we explain how windowing works in streaming pipelines, and the decisions you have to make to perform complex event processing in streaming with Apache Beam.
+This repository serves as a hands-on educational guide to understanding Apache Beam windowing behavior. It provides a concrete, runnable example to help you visualize:
+- How different windowing strategies group data.
+- How triggers control when results are materialized.
+- How "allowed lateness" determines whether late-arriving data is processed or dropped.
+- How watermarks progress and impact aggregation.
 
-Whenever we apply a window, there are often questions about whether the window will drop data, and how many times (and when) the output will be triggered.
-
-This repo contains a sample pipeline that uses unit testing to check if your window would drop data, and how many times the window would be triggered. You write your window in a function, and then use the unit test to check the output of that pipeline. If the window drops data, the test will fail. In addition, you get a CSV output that you can examine to see how and when your window produced output.
+By running the tests and analyzing the output, you can build intuition for these critical streaming concepts.
 
 ---
 
 ## Watch the Talk
 
 - Watch the video at the [Beam Summit website](https://2020.beamsummit.org/sessions/understanding-exactly-once-processing/).
-- [Check the local Slides PDF](docs/slides.pdf).
+- [Slides (PDF)](docs/slides.pdf).
 
 ---
 
 ## Core Concepts
 
-### Event Time vs. Processing Time
-- **Event Time**: The time when the event originally occurred, typically embedded as a timestamp in the message payload.
-- **Processing Time**: The time when the event is actually processed by the pipeline stage.
-- **Watermark**: The system's Monotonically increasing estimation of event time progress. It represents the relationship between event time and processing time.
+To get the most out of this example, it helps to understand these core streaming concepts:
 
-### Late Data
-Data is not "late" by itself; it is considered **late** only when its event timestamp is older than the current watermark. If you don't aggregate, late data is usually not a problem. However, when aggregating, you must define a window and decide how long to wait for late data (allowed lateness), which introduces the risk of dropping data.
-
-### Deterministic Testing
-Using `TestStream`, we can control the watermark and processing time flow deterministically. This allows us to simulate late data arrival and verify windowing behavior without relying on real-time execution.
+*   **Event Time vs. Processing Time**:
+    *   **Event Time**: The time when the event originally occurred (e.g., device log timestamp).
+    *   **Processing Time**: The time when the event is processed in your Beam pipeline.
+    *   **Watermark**: Beam's estimation of event-time progress. A watermark of $T$ means the system assumes it has observed all data with event time $t < T$.
+*   **Late Data**: Data is "late" if it arrives after the watermark has passed its event timestamp. When aggregating data in windows, you must configure how to handle late data (e.g., using `allowedLateness` to wait longer, or letting it drop).
+*   **Deterministic Testing with `TestStream`**: Testing streaming pipelines with real-time clocks is unreliable. Beam's `TestStream` allows us to programmatically advance the watermark and processing time, making tests deterministic and reproducible. This is key to verifying how windows and triggers behave under different latency scenarios.
 
 ---
 
