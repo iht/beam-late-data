@@ -49,6 +49,24 @@ The test steps are:
 
 ---
 
+## Prerequisites
+
+To run the examples and tests in this repository, you need the following installed:
+
+*   **Java JDK 25** or higher.
+*   **Apache Maven 3.x**.
+*   A POSIX-compliant shell (e.g., **Bash**, **Zsh**) to run the helper scripts.
+
+You can verify your installation by running:
+
+```bash
+java -version
+mvn -version
+```
+
+---
+
+
 ## How to Test Your Own Window
 
 ### First: Add your window
